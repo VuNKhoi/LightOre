@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:your_app/screens/login_screen.dart';
-import 'package:your_app/screens/home_screen.dart';
-import 'package:your_app/screens/paywall_screen.dart';
-import 'package:your_app/repositories/auth_repository.dart';
+import 'package:lightore/screens/login_screen.dart';
+import 'package:lightore/screens/home_screen.dart';
+import 'package:lightore/screens/paywall_screen.dart';
+import 'package:lightore/repositories/auth_repository.dart';
 
 import 'auth_notifier_test.dart';
 import 'test_utils.dart';
@@ -28,7 +28,8 @@ void main() {
     expect(find.byType(LoginScreen), findsOneWidget);
   });
 
-  testWidgets('unsubscribed user redirected to paywall from /home', (tester) async {
+  testWidgets('unsubscribed user redirected to paywall from /home',
+      (tester) async {
     final mockRepo = MockAuthRepository();
     mockRepo._isSubscribed = false;
     final testContainer = ProviderContainer(overrides: [
@@ -45,7 +46,8 @@ void main() {
     expect(find.byType(PaywallScreen), findsOneWidget);
   });
 
-  testWidgets('subscribed user redirected to home from /paywall', (tester) async {
+  testWidgets('subscribed user redirected to home from /paywall',
+      (tester) async {
     final mockRepo = MockAuthRepository();
     mockRepo._isSubscribed = true;
     final testContainer = ProviderContainer(overrides: [

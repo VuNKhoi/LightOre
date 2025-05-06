@@ -1,8 +1,7 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:your_app/app.dart';
+import 'package:lightore/app.dart';
 import 'package:go_router/go_router.dart';
 
 /// Pumps the full app with the given overrides.
@@ -13,7 +12,7 @@ Future<void> pumpAppWithOverrides(
   await tester.pumpWidget(
     ProviderScope(
       overrides: overrides,
-      child: const MyApp(),
+      child: const LightOreApp(),
     ),
   );
   await tester.pump();

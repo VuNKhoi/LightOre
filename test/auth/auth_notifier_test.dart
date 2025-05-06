@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:your_app/auth/auth_state.dart';
-import 'package:your_app/auth/auth_notifier.dart';
-import 'package:your_app/repositories/auth_repository.dart';
+import 'package:lightore/auth/auth_state.dart';
+import 'package:lightore/auth/auth_notifier.dart';
+import 'package:lightore/repositories/auth_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class MockAuthRepository implements AuthRepository {
@@ -37,7 +37,8 @@ class MockAuthRepository implements AuthRepository {
 
   @override
   Future<bool> checkSubscription(String userId) async {
-    if (shouldThrowOnCheckSubscription) throw Exception('Subscription check failed');
+    if (shouldThrowOnCheckSubscription)
+      throw Exception('Subscription check failed');
     return _isSubscribed;
   }
 }
@@ -63,7 +64,8 @@ void main() {
     });
 
     test('subscription check failure falls back safely', () async {
-      final mockRepo = MockAuthRepository()..shouldThrowOnCheckSubscription = true;
+      final mockRepo = MockAuthRepository()
+        ..shouldThrowOnCheckSubscription = true;
       final container = ProviderContainer(overrides: [
         authRepositoryProvider.overrideWithValue(mockRepo),
       ]);

@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:your_app/auth/auth_gate.dart';
-import 'package:your_app/screens/login_screen.dart';
-import 'package:your_app/screens/home_screen.dart';
-import 'package:your_app/screens/paywall_screen.dart';
-import 'package:your_app/auth/auth_state.dart';
+import 'package:lightore/auth/auth_gate.dart';
+import 'package:lightore/screens/login_screen.dart';
+import 'package:lightore/screens/home_screen.dart';
+import 'package:lightore/screens/paywall_screen.dart';
+import 'package:lightore/auth/auth_state.dart';
 
 class LightOreApp extends ConsumerWidget {
   const LightOreApp({super.key});
