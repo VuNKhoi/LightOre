@@ -1,3 +1,11 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-final isLoggedInProvider = StateProvider<bool>((ref) => false);
+enum AuthStatus {
+  unknown,
+  authenticated,
+  unauthenticated,
+}
+
+final authStatusProvider = StateProvider<AuthStatus>((ref) {
+  return AuthStatus.unauthenticated;
+});
