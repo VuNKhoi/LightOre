@@ -63,9 +63,9 @@
     },
     {
       "name": "go_router",
-      "rootUri": "file:///Users/colevu/.pub-cache/hosted/pub.dev/go_router-12.1.3",
+      "rootUri": "file:///Users/colevu/.pub-cache/hosted/pub.dev/go_router-15.1.1",
       "packageUri": "lib/",
-      "languageVersion": "3.0"
+      "languageVersion": "3.4"
     },
     {
       "name": "leak_tracker",
@@ -188,7 +188,7 @@
       "languageVersion": "3.1"
     }
   ],
-  "generated": "2025-05-03T11:25:17.870544Z",
+  "generated": "2025-05-06T11:47:30.807069Z",
   "generator": "pub",
   "generatorVersion": "3.7.2",
   "flutterRoot": "file:///Users/colevu/development/flutter",
