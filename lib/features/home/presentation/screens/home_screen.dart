@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lightore/auth/application/auth_provider.dart';
 
-class HomeScreen extends ConsumerWidget {
+class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Home')),
       body: Center(
         child: ElevatedButton(
           onPressed: () {
-            ref.read(isLoggedInProvider.notifier).state = false;
+            // Add any functionality you want here
+            // For example, logout or navigate to another screen
+            print("User is on the home screen");
           },
-          child: const Text('Log Out'),
+          child: const Text('Go to Another Screen'),
         ),
       ),
     );

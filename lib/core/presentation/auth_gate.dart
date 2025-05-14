@@ -1,28 +1,49 @@
+// lib/core/presentation/auth_gate.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lightore/auth/application/auth_provider.dart';
+import 'package:lightore/features/auth/application/auth_provider.dart';
+import 'package:lightore/features/auth/application/auth_status.dart';
 
-class AuthGate extends ConsumerWidget {
+class AuthGate extends ConsumerStatefulWidget {
   final Widget child;
 
   const AuthGate({super.key, required this.child});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final status = ref.watch(authStatusProvider);
+  ConsumerState<AuthGate> createState() => _AuthGateState();
+}
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+class _AuthGateState extends ConsumerState<AuthGate> {
+  @override
+  void initState() {
+    super.initState();
+
+    // Listen for auth changes and redirect accordingly
+    ref.listen(authProvider, (previous, next) {
       final router = GoRouter.of(context);
+      final location = router.routerDelegate.currentConfiguration.toString();
 
-      if (status == AuthStatus.unauthenticated && router.location != '/auth') {
-        router.go('/auth');
-      } else if (status == AuthStatus.authenticated &&
-          router.location == '/auth') {
-        router.go('/home');
+      switch (next.status) {
+        case AuthStatus.unauthenticated:
+          if (location != '/login') {
+            router.go('/login');
+          }
+          break;
+        case AuthStatus.authenticated:
+          if (location == '/login') {
+            router.go('/home');
+          }
+          break;
+        case AuthStatus.unknown:
+          // Stay in place or show splash
+          break;
       }
     });
+  }
 
-    return child;
+  @override
+  Widget build(BuildContext context) {
+    return widget.child;
   }
 }
