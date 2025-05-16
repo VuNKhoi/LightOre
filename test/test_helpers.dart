@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lightore/core/presentation/auth_gate.dart';
 import 'package:lightore/features/auth/application/auth_notifier.dart';
 import 'package:lightore/features/auth/application/auth_provider.dart';
-import 'package:lightore/features/auth/application/auth_state.dart';
 import 'package:lightore/repositories/auth_repository.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -15,63 +12,79 @@ class MockAuthRepository extends Mock implements AuthRepository {}
 
 // Test AuthNotifier
 class TestAuthNotifier extends AuthNotifier {
-  TestAuthNotifier(MockAuthRepository mock) : super(mock) {
-    state = AuthState.unauthenticated(); // Skip _init
-  }
+  TestAuthNotifier(MockAuthRepository mock) : super(mock);
+}
 
-  @override
-  Future<void> login() async {
-    await super.login(); // uses _authRepository internally
-    state = AuthState.authenticated(); // force deterministic state
-  }
+Future<void> pumpLoginScreenWithRouter(WidgetTester tester,
+    MockAuthRepository mockAuthRepository, GoRouter router) async {
+  await tester.pumpWidget(
+    ProviderScope(
+      overrides: [
+        authProvider
+            .overrideWith((ref) => TestAuthNotifier(mockAuthRepository)),
+      ],
+      child: MaterialApp.router(
+        routerConfig: router,
+      ),
+    ),
+  );
+}
+
+Future<void> pumpWidgetWithRouter({
+  required WidgetTester tester,
+  required String initialLocation,
+  required Map<String, Widget> routes,
+}) async {
+  final router = GoRouter(
+    initialLocation: initialLocation,
+    routes: routes.entries
+        .map((entry) => GoRoute(
+              path: entry.key,
+              builder: (context, state) => entry.value,
+            ))
+        .toList(),
+  );
+
+  await tester.pumpWidget(
+    MaterialApp.router(
+      routerConfig: router,
+    ),
+  );
+}
+
+void mockSetAuthenticated(
+    MockAuthRepository mockAuthRepository, bool shouldSucceed) {
+  when(() => mockAuthRepository.setAuthenticated(any()))
+      .thenAnswer((_) async => shouldSucceed);
+}
+
+List<GoRoute> getAuthTestRoutes() {
+  return [
+    GoRoute(
+      path: '/login',
+      builder: (context, state) => const Scaffold(body: Text('Login Screen')),
+    ),
+    GoRoute(
+      path: '/home',
+      builder: (context, state) => const Scaffold(body: Text('Home Screen')),
+    ),
+  ];
+}
+
+ProviderContainer createTestProviderContainer(
+    MockAuthRepository mockAuthRepository) {
+  return ProviderContainer(overrides: [
+    authProvider.overrideWith((ref) => TestAuthNotifier(mockAuthRepository)),
+  ]);
 }
 
 // Helper function to create and mock the AuthRepository
 MockAuthRepository createMockAuthRepository() {
   final mockAuthRepository = MockAuthRepository();
-  when(() => mockAuthRepository.setAuthenticated(true))
-      .thenAnswer((_) async {});
-  when(() => mockAuthRepository.clear()).thenAnswer((_) async {});
+  when(() => mockAuthRepository.setAuthenticated(any()))
+      .thenAnswer((_) async => true);
+  when(() => mockAuthRepository.clear()).thenAnswer((_) async => true);
+  when(() => mockAuthRepository.isAuthenticated())
+      .thenAnswer((_) async => null);
   return mockAuthRepository;
-}
-
-// Helper function to create a common router setup
-GoRouter createRouter(Widget loginScreen, Widget homeScreen) {
-  return GoRouter(
-    initialLocation: '/login',
-    routes: [
-      GoRoute(
-        path: '/login',
-        builder: (context, state) => loginScreen,
-      ),
-      GoRoute(
-        path: '/home',
-        builder: (context, state) => homeScreen,
-      ),
-    ],
-  );
-}
-
-// Helper function to pump a widget with a mock auth repository and router
-Future<void> pumpWidgetWithAuth(
-  WidgetTester tester,
-  Widget screen,
-  MockAuthRepository mockAuthRepository,
-  Widget homeScreen, {
-  List<Override>? overrides,
-}) async {
-  final testAuthNotifier = TestAuthNotifier(mockAuthRepository);
-
-  await tester.pumpWidget(
-    ProviderScope(
-      overrides: [
-        authProvider.overrideWith((ref) => testAuthNotifier),
-        if (overrides != null) ...overrides,
-      ],
-      child: MaterialApp.router(
-        routerConfig: createRouter(screen, homeScreen),
-        builder: (context, child) => AuthGate(child: child!),
-      ),
-    ),
-  );
 }

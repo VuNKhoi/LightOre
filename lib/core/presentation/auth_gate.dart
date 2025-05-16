@@ -16,34 +16,20 @@ class AuthGate extends ConsumerStatefulWidget {
 
 class _AuthGateState extends ConsumerState<AuthGate> {
   @override
-  void initState() {
-    super.initState();
-
-    // Listen for auth changes and redirect accordingly
+  Widget build(BuildContext context) {
     ref.listen(authProvider, (previous, next) {
       final router = GoRouter.of(context);
-      final location = router.routerDelegate.currentConfiguration.toString();
 
-      switch (next.status) {
-        case AuthStatus.unauthenticated:
-          if (location != '/login') {
-            router.go('/login');
-          }
-          break;
-        case AuthStatus.authenticated:
-          if (location == '/login') {
-            router.go('/home');
-          }
-          break;
-        case AuthStatus.unknown:
-          // Stay in place or show splash
-          break;
+      // Debugging: Log state transitions
+      print('AuthGate: Previous state: $previous, Next state: $next');
+
+      if (next.status == AuthStatus.unauthenticated) {
+        router.go('/login');
+      } else if (next.status == AuthStatus.authenticated) {
+        router.go('/home');
       }
     });
-  }
 
-  @override
-  Widget build(BuildContext context) {
     return widget.child;
   }
 }

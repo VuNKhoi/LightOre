@@ -12,7 +12,6 @@ class HomeScreen extends StatelessWidget {
           onPressed: () {
             // Add any functionality you want here
             // For example, logout or navigate to another screen
-            print("User is on the home screen");
           },
           child: const Text('Go to Another Screen'),
         ),

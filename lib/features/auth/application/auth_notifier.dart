@@ -1,16 +1,18 @@
 // lib/features/auth/application/auth_notifier.dart
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lightore/repositories/auth_repository.dart';
+import 'package:meta/meta.dart';
 import 'auth_state.dart';
 
 class AuthNotifier extends StateNotifier<AuthState> {
   final AuthRepository _authRepository;
 
   AuthNotifier(this._authRepository) : super(AuthState.unknown()) {
-    _init();
+    init();
   }
 
-  Future<void> _init() async {
+  @visibleForTesting
+  Future<void> init() async {
     final isAuth = await _authRepository.isAuthenticated();
     if (isAuth == true) {
       state = AuthState.authenticated();
@@ -21,18 +23,27 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
-  Future<void> login() async {
-    await _authRepository.setAuthenticated(true);
-    state = AuthState.authenticated();
+  Future<bool> login() async {
+    final success = await _authRepository.setAuthenticated(true);
+    if (success) {
+      state = AuthState.authenticated();
+    }
+    return success;
   }
 
-  Future<void> logout() async {
-    await _authRepository.setAuthenticated(false);
-    state = AuthState.unauthenticated();
+  Future<bool> logout() async {
+    final success = await _authRepository.setAuthenticated(false);
+    if (success) {
+      state = AuthState.unauthenticated();
+    }
+    return success;
   }
 
-  Future<void> setUnknown() async {
-    await _authRepository.clear();
-    state = AuthState.unknown();
+  Future<bool> setUnknown() async {
+    final success = await _authRepository.clear();
+    if (success) {
+      state = AuthState.unknown();
+    }
+    return success;
   }
 }

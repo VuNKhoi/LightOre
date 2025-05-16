@@ -8,102 +8,144 @@ import '../../../test_helpers.dart';
 
 void main() {
   late MockAuthRepository mockAuthRepository;
+  late ProviderContainer container;
 
   setUp(() {
     mockAuthRepository = createMockAuthRepository();
+    container = createTestProviderContainer(mockAuthRepository);
+
+    when(() => mockAuthRepository.isAuthenticated())
+        .thenAnswer((_) async => null);
   });
 
-  // Helper to create the provider container
-  ProviderContainer createContainer() {
-    final container = ProviderContainer(
-      overrides: [
-        authRepositoryProvider.overrideWith((ref) => mockAuthRepository),
-      ],
-    );
-    addTearDown(container.dispose);
-    return container;
-  }
+  tearDown(() {
+    container.dispose();
+  });
 
   group('AuthNotifier', () {
     test('initial state is unknown', () {
-      final container = createContainer();
       final state = container.read(authProvider);
       expect(state.status, AuthStatus.unknown);
     });
 
-    test('login() sets state to authenticated', () async {
+    test('login() sets state to authenticated and returns true', () async {
       when(() => mockAuthRepository.setAuthenticated(true))
-          .thenAnswer((_) async {});
+          .thenAnswer((_) async => true);
 
-      final container = createContainer();
       final notifier = container.read(authProvider.notifier);
 
-      await notifier.login();
+      final result = await notifier.login();
 
+      expect(result, true);
       expect(container.read(authProvider).status, AuthStatus.authenticated);
       verify(() => mockAuthRepository.setAuthenticated(true)).called(1);
     });
 
-    test('logout() sets state to unauthenticated', () async {
-      when(() => mockAuthRepository.setAuthenticated(false))
-          .thenAnswer((_) async {});
+    test('login() does not set state if repository returns false', () async {
+      when(() => mockAuthRepository.setAuthenticated(true))
+          .thenAnswer((_) async => false);
 
-      final container = createContainer();
       final notifier = container.read(authProvider.notifier);
 
-      await notifier.logout();
+      final result = await notifier.login();
 
+      expect(result, false);
+      // State should remain unknown (initial)
+      expect(container.read(authProvider).status, AuthStatus.unknown);
+      verify(() => mockAuthRepository.setAuthenticated(true)).called(1);
+    });
+
+    test('logout() sets state to unauthenticated and returns true', () async {
+      when(() => mockAuthRepository.setAuthenticated(false))
+          .thenAnswer((_) async => true);
+
+      final notifier = container.read(authProvider.notifier);
+
+      final result = await notifier.logout();
+
+      expect(result, true);
       expect(container.read(authProvider).status, AuthStatus.unauthenticated);
       verify(() => mockAuthRepository.setAuthenticated(false)).called(1);
     });
 
-    test('setUnknown() sets state to unknown', () async {
-      when(() => mockAuthRepository.clear()).thenAnswer((_) async {});
+    test('logout() does not set state if repository returns false', () async {
+      when(() => mockAuthRepository.setAuthenticated(false))
+          .thenAnswer((_) async => false);
 
-      final container = createContainer();
       final notifier = container.read(authProvider.notifier);
 
-      await notifier.setUnknown();
+      final result = await notifier.logout();
 
+      expect(result, false);
+      // State should remain unknown (initial)
+      expect(container.read(authProvider).status, AuthStatus.unknown);
+      verify(() => mockAuthRepository.setAuthenticated(false)).called(1);
+    });
+
+    test('setUnknown() sets state to unknown and returns true', () async {
+      when(() => mockAuthRepository.clear()).thenAnswer((_) async => true);
+
+      final notifier = container.read(authProvider.notifier);
+
+      final result = await notifier.setUnknown();
+
+      expect(result, true);
       expect(container.read(authProvider).status, AuthStatus.unknown);
       verify(() => mockAuthRepository.clear()).called(1);
     });
 
-    test('_init() sets state to authenticated if isAuthenticated returns true',
+    test('setUnknown() does not set state if repository returns false',
+        () async {
+      when(() => mockAuthRepository.clear()).thenAnswer((_) async => false);
+
+      final notifier = container.read(authProvider.notifier);
+
+      final result = await notifier.setUnknown();
+
+      expect(result, false);
+      // State should remain unknown (initial)
+      expect(container.read(authProvider).status, AuthStatus.unknown);
+      verify(() => mockAuthRepository.clear()).called(1);
+    });
+
+    test('init() sets state to authenticated if isAuthenticated returns true',
         () async {
       when(() => mockAuthRepository.isAuthenticated())
           .thenAnswer((_) async => true);
 
-      final container = createContainer();
-      await Future.delayed(
-          const Duration(milliseconds: 1)); // allow _init to complete
+      // Wait for the state to update
+      await container.read(authProvider.notifier).init();
 
-      expect(container.read(authProvider).status, AuthStatus.authenticated);
+      final state = container.read(authProvider).status;
+
+      expect(state, AuthStatus.authenticated);
     });
 
     test(
-        '_init() sets state to unauthenticated if isAuthenticated returns false',
+        'init() sets state to unauthenticated if isAuthenticated returns false',
         () async {
       when(() => mockAuthRepository.isAuthenticated())
           .thenAnswer((_) async => false);
 
-      final container = createContainer();
-      await Future.delayed(
-          const Duration(milliseconds: 1)); // allow _init to complete
+      // Wait for the state to update
+      await container.read(authProvider.notifier).init();
 
-      expect(container.read(authProvider).status, AuthStatus.unauthenticated);
+      final state = container.read(authProvider).status;
+
+      expect(state, AuthStatus.unauthenticated);
     });
 
-    test('_init() keeps state unknown if isAuthenticated returns null',
+    test('init() keeps state unknown if isAuthenticated returns null',
         () async {
       when(() => mockAuthRepository.isAuthenticated())
           .thenAnswer((_) async => null);
 
-      final container = createContainer();
-      await Future.delayed(
-          const Duration(milliseconds: 1)); // allow _init to complete
+      // Wait for the state to update
+      await container.read(authProvider.notifier).init();
 
-      expect(container.read(authProvider).status, AuthStatus.unknown);
+      final state = container.read(authProvider).status;
+
+      expect(state, AuthStatus.unknown);
     });
   });
 }

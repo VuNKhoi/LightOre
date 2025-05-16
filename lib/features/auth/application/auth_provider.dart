@@ -7,5 +7,4 @@ import 'auth_state.dart';
 final authRepositoryProvider = Provider((ref) => AuthRepository());
 
 final authProvider = StateNotifierProvider<AuthNotifier, AuthState>(
-  (ref) => AuthNotifier(ref.watch(authRepositoryProvider)),
-);
+    (ref) => AuthNotifier(ref.watch(authRepositoryProvider)));
