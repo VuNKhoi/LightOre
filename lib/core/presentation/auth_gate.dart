@@ -5,31 +5,46 @@ import 'package:go_router/go_router.dart';
 import 'package:lightore/features/auth/application/auth_provider.dart';
 import 'package:lightore/features/auth/application/auth_status.dart';
 
-class AuthGate extends ConsumerStatefulWidget {
+class AuthGate extends StatelessWidget {
   final Widget child;
-
   const AuthGate({super.key, required this.child});
 
   @override
-  ConsumerState<AuthGate> createState() => _AuthGateState();
+  Widget build(BuildContext context) {
+    return Material(
+      type: MaterialType.transparency,
+      child: Stack(
+        children: [
+          child,
+          const AuthRedirector(),
+        ],
+      ),
+    );
+  }
 }
 
-class _AuthGateState extends ConsumerState<AuthGate> {
+class AuthRedirector extends ConsumerWidget {
+  const AuthRedirector({super.key});
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     ref.listen(authProvider, (previous, next) {
       final router = GoRouter.of(context);
-
-      // Debugging: Log state transitions
-      print('AuthGate: Previous state: $previous, Next state: $next');
-
-      if (next.status == AuthStatus.unauthenticated) {
-        router.go('/login');
-      } else if (next.status == AuthStatus.authenticated) {
-        router.go('/home');
+      final currentLocation =
+          router.routerDelegate.currentConfiguration.uri.toString();
+      if ((next.status == AuthStatus.unauthenticated ||
+              next.status == AuthStatus.unknown) &&
+          currentLocation != '/login') {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          router.go('/login');
+        });
+      } else if (next.status == AuthStatus.authenticated &&
+          currentLocation != '/home') {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          router.go('/home');
+        });
       }
     });
-
-    return widget.child;
+    return const SizedBox.shrink();
   }
 }

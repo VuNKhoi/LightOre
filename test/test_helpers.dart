@@ -2,10 +2,53 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lightore/core/presentation/auth_gate.dart';
 import 'package:lightore/features/auth/application/auth_notifier.dart';
 import 'package:lightore/features/auth/application/auth_provider.dart';
+import 'package:lightore/features/auth/application/auth_state.dart';
 import 'package:lightore/repositories/auth_repository.dart';
 import 'package:mocktail/mocktail.dart';
+
+/// Builds a ProviderScope or UncontrolledProviderScope for tests, with optional overrides.
+Widget buildProviderScope({
+  required Widget child,
+  MockAuthRepository? mock,
+  TestAuthNotifier? notifier,
+  bool uncontrolled = false,
+  ProviderContainer? container,
+  bool withUnknown = false,
+}) {
+  if (uncontrolled && container != null) {
+    return UncontrolledProviderScope(
+      container: container,
+      child: child,
+    );
+  }
+  return ProviderScope(
+    overrides: [
+      authProvider.overrideWith((ref) =>
+          notifier ?? (withUnknown
+              ? TestAuthNotifier.withStateUnknown(mock!)
+              : TestAuthNotifier(mock!))),
+    ],
+    child: child,
+  );
+}
+
+/// Pumps a widget and settles for widget tests.
+Future<void> pumpAuthTestWidget(
+  WidgetTester tester, {
+  required Widget widget,
+}) async {
+  await tester.pumpWidget(widget);
+  await tester.pumpAndSettle();
+  await tester.pump();
+}
+
+/// Asserts the current router location matches the expected location.
+void expectRouterLocation(GoRouter router, String location) {
+  expect(router.routerDelegate.currentConfiguration.uri.toString(), location);
+}
 
 // Mock AuthRepository
 class MockAuthRepository extends Mock implements AuthRepository {}
@@ -13,6 +56,12 @@ class MockAuthRepository extends Mock implements AuthRepository {}
 // Test AuthNotifier
 class TestAuthNotifier extends AuthNotifier {
   TestAuthNotifier(MockAuthRepository mock) : super(mock);
+
+  // Factory for unknown state
+  TestAuthNotifier.withStateUnknown(MockAuthRepository mock)
+      : super(mock) {
+    state = AuthState.unknown();
+  }
 }
 
 Future<void> pumpLoginScreenWithRouter(WidgetTester tester,
@@ -62,11 +111,15 @@ List<GoRoute> getAuthTestRoutes() {
   return [
     GoRoute(
       path: '/login',
-      builder: (context, state) => const Scaffold(body: Text('Login Screen')),
+      builder: (context, state) => AuthGate(
+        child: const Scaffold(body: Text('Login Screen', key: ValueKey('login-screen'))),
+      ),
     ),
     GoRoute(
       path: '/home',
-      builder: (context, state) => const Scaffold(body: Text('Home Screen')),
+      builder: (context, state) => AuthGate(
+        child: const Scaffold(body: Text('Home Screen', key: ValueKey('home-screen'))),
+      ),
     ),
   ];
 }
