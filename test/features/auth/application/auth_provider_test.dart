@@ -16,8 +16,12 @@ void main() {
     setUp(() {
       mockAuthRepository = createMockAuthRepository();
       when(() => mockAuthRepository.clear()).thenAnswer((_) async => true);
-
-      container = createTestProviderContainer(mockAuthRepository);
+      // Use a dummy FirebaseAuth for provider
+      container = ProviderContainer(overrides: [
+        authRepositoryProvider.overrideWith((ref, _) => mockAuthRepository),
+        authProvider
+            .overrideWith((ref) => MockAuthNotifier(mockAuthRepository)),
+      ]);
     });
 
     tearDown(() {
@@ -25,7 +29,7 @@ void main() {
     });
 
     test('authRepositoryProvider provides an instance of AuthRepository', () {
-      final authRepository = container.read(authRepositoryProvider);
+      final authRepository = container.read(authRepositoryProvider(null));
       expect(authRepository, isA<AuthRepository>());
     });
 
