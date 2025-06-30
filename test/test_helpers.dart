@@ -27,7 +27,8 @@ Widget buildProviderScope({
   return ProviderScope(
     overrides: [
       authProvider.overrideWith((ref) =>
-          notifier ?? (withUnknown
+          notifier ??
+          (withUnknown
               ? TestAuthNotifier.withStateUnknown(mock!)
               : TestAuthNotifier(mock!))),
     ],
@@ -55,11 +56,10 @@ class MockAuthRepository extends Mock implements AuthRepository {}
 
 // Test AuthNotifier
 class TestAuthNotifier extends AuthNotifier {
-  TestAuthNotifier(MockAuthRepository mock) : super(mock);
+  TestAuthNotifier(MockAuthRepository super.mock);
 
   // Factory for unknown state
-  TestAuthNotifier.withStateUnknown(MockAuthRepository mock)
-      : super(mock) {
+  TestAuthNotifier.withStateUnknown(MockAuthRepository super.mock) {
     state = AuthState.unknown();
   }
 }
@@ -111,14 +111,16 @@ List<GoRoute> getAuthTestRoutes() {
   return [
     GoRoute(
       path: '/login',
-      builder: (context, state) => AuthGate(
-        child: const Scaffold(body: Text('Login Screen', key: ValueKey('login-screen'))),
+      builder: (context, state) => const AuthGate(
+        child:
+            Scaffold(body: Text('Login Screen', key: ValueKey('login-screen'))),
       ),
     ),
     GoRoute(
       path: '/home',
-      builder: (context, state) => AuthGate(
-        child: const Scaffold(body: Text('Home Screen', key: ValueKey('home-screen'))),
+      builder: (context, state) => const AuthGate(
+        child:
+            Scaffold(body: Text('Home Screen', key: ValueKey('home-screen'))),
       ),
     ),
   ];

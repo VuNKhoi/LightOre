@@ -31,11 +31,11 @@ void main() {
           GoRoute(
             path: '/home',
             builder: (context, state) =>
-                AuthGate(child: const Scaffold(body: Text('Home Screen'))),
+                const AuthGate(child: Scaffold(body: Text('Home Screen'))),
           ),
           GoRoute(
             path: '/login',
-            builder: (context, state) => AuthGate(child: const LoginScreen()),
+            builder: (context, state) => const AuthGate(child: LoginScreen()),
           ),
         ],
         refreshListenable: ValueNotifier(mockAuthRepository),
@@ -71,11 +71,11 @@ void main() {
           GoRoute(
             path: '/home',
             builder: (context, state) =>
-                AuthGate(child: const Scaffold(body: Text('Home Screen'))),
+                const AuthGate(child: Scaffold(body: Text('Home Screen'))),
           ),
           GoRoute(
             path: '/login',
-            builder: (context, state) => AuthGate(child: const LoginScreen()),
+            builder: (context, state) => const AuthGate(child: LoginScreen()),
           ),
         ],
         refreshListenable: ValueNotifier(mockAuthRepository),
@@ -105,11 +105,11 @@ void main() {
           GoRoute(
             path: '/home',
             builder: (context, state) =>
-                AuthGate(child: const Scaffold(body: Text('Home Screen'))),
+                const AuthGate(child: Scaffold(body: Text('Home Screen'))),
           ),
           GoRoute(
             path: '/login',
-            builder: (context, state) => AuthGate(child: const LoginScreen()),
+            builder: (context, state) => const AuthGate(child: LoginScreen()),
           ),
         ],
         refreshListenable: ValueNotifier(mockAuthRepository),
