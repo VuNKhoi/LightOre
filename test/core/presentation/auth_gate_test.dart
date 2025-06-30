@@ -90,7 +90,7 @@ void main() {
       final router = createTestRouter(initialLocation: '/home');
       final container = createTestProviderContainer(mock);
       final notifier =
-          container.read(authProvider.notifier) as TestAuthNotifier;
+          container.read(authProvider.notifier) as MockAuthNotifier;
       await pumpAuthTestWidget(
         tester,
         widget: buildProviderScope(
@@ -180,7 +180,7 @@ void main() {
       final router = createTestRouter(initialLocation: '/home');
       final container = createTestProviderContainer(mock);
       final notifier =
-          container.read(authProvider.notifier) as TestAuthNotifier;
+          container.read(authProvider.notifier) as MockAuthNotifier;
       await pumpAuthTestWidget(
         tester,
         widget: buildProviderScope(
@@ -216,7 +216,7 @@ GoRouter createTestRouter({String initialLocation = '/home'}) {
 Widget buildProviderScope({
   required Widget child,
   MockAuthRepository? mock,
-  TestAuthNotifier? notifier,
+  MockAuthNotifier? notifier,
   bool uncontrolled = false,
   ProviderContainer? container,
   bool withUnknown = false,
@@ -232,8 +232,8 @@ Widget buildProviderScope({
       authProvider.overrideWith((ref) =>
           notifier ??
           (withUnknown
-              ? TestAuthNotifier.withStateUnknown(mock!)
-              : TestAuthNotifier(mock!))),
+              ? MockAuthNotifier.withStateUnknown(mock!)
+              : MockAuthNotifier(mock!))),
     ],
     child: child,
   );

@@ -46,4 +46,30 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
     return success;
   }
+
+  Future<void> registerWithEmail(String email, String password) async {
+    try {
+      await _authRepository.registerWithEmail(email, password);
+      state = AuthState.authenticated();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> signInWithEmail(String email, String password) async {
+    try {
+      await _authRepository.signInWithEmail(email, password);
+      state = AuthState.authenticated();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> sendPasswordResetEmail(String email) async {
+    try {
+      await _authRepository.sendPasswordResetEmail(email);
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

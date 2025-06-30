@@ -8,12 +8,13 @@ import 'package:lightore/features/auth/application/auth_provider.dart';
 import 'package:lightore/features/auth/application/auth_state.dart';
 import 'package:lightore/repositories/auth_repository.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 /// Builds a ProviderScope or UncontrolledProviderScope for tests, with optional overrides.
 Widget buildProviderScope({
   required Widget child,
   MockAuthRepository? mock,
-  TestAuthNotifier? notifier,
+  MockAuthNotifier? notifier,
   bool uncontrolled = false,
   ProviderContainer? container,
   bool withUnknown = false,
@@ -29,8 +30,8 @@ Widget buildProviderScope({
       authProvider.overrideWith((ref) =>
           notifier ??
           (withUnknown
-              ? TestAuthNotifier.withStateUnknown(mock!)
-              : TestAuthNotifier(mock!))),
+              ? MockAuthNotifier.withStateUnknown(mock!)
+              : MockAuthNotifier(mock!))),
     ],
     child: child,
   );
@@ -55,11 +56,12 @@ void expectRouterLocation(GoRouter router, String location) {
 class MockAuthRepository extends Mock implements AuthRepository {}
 
 // Test AuthNotifier
-class TestAuthNotifier extends AuthNotifier {
-  TestAuthNotifier(MockAuthRepository super.mock);
+/// A [MockAuthNotifier] for use in widget and provider tests.
+class MockAuthNotifier extends AuthNotifier {
+  MockAuthNotifier(MockAuthRepository super.mock);
 
   // Factory for unknown state
-  TestAuthNotifier.withStateUnknown(MockAuthRepository super.mock) {
+  MockAuthNotifier.withStateUnknown(MockAuthRepository super.mock) {
     state = AuthState.unknown();
   }
 }
@@ -69,8 +71,7 @@ Future<void> pumpLoginScreenWithRouter(WidgetTester tester,
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
-        authProvider
-            .overrideWith((ref) => TestAuthNotifier(mockAuthRepository)),
+        authProvider.overrideWith((ref) => MockAuthNotifier(mockAuthRepository)),
       ],
       child: MaterialApp.router(
         routerConfig: router,
@@ -129,7 +130,7 @@ List<GoRoute> getAuthTestRoutes() {
 ProviderContainer createTestProviderContainer(
     MockAuthRepository mockAuthRepository) {
   return ProviderContainer(overrides: [
-    authProvider.overrideWith((ref) => TestAuthNotifier(mockAuthRepository)),
+    authProvider.overrideWith((ref) => MockAuthNotifier(mockAuthRepository)),
   ]);
 }
 
@@ -142,4 +143,22 @@ MockAuthRepository createMockAuthRepository() {
   when(() => mockAuthRepository.isAuthenticated())
       .thenAnswer((_) async => null);
   return mockAuthRepository;
+}
+
+// Mock classes for FirebaseAuth
+class MockFirebaseAuth extends Mock implements FirebaseAuth {}
+class MockUserCredential extends Mock implements UserCredential {}
+class MockUser extends Mock implements User {}
+
+// Helper to set up mock FirebaseAuth for AuthRepository tests
+MockFirebaseAuth createMockFirebaseAuth({
+  MockUserCredential? userCredential,
+  MockUser? user,
+  Stream<User?>? authStateStream,
+}) {
+  final mock = MockFirebaseAuth();
+  when(() => mock.currentUser).thenReturn(user);
+  when(() => mock.authStateChanges()).thenAnswer((_) => authStateStream ?? const Stream.empty());
+  when(() => mock.signOut()).thenAnswer((_) async {});
+  return mock;
 }
