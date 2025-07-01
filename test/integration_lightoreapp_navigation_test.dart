@@ -49,9 +49,11 @@ void main() {
       expect(find.widgetWithText(AppBar, 'Login or Pay'), findsOneWidget);
     });
 
-    testWidgets('Authenticated user can logout from home and is navigated to login',
+    testWidgets(
+        'Authenticated user can logout from home and is navigated to login',
         (tester) async {
-      when(() => mockAuthRepository.isAuthenticated()).thenAnswer((_) async => true);
+      when(() => mockAuthRepository.isAuthenticated())
+          .thenAnswer((_) async => true);
       final notifier = MockAuthNotifier(mockAuthRepository)
         ..state = AuthState.authenticated();
       await tester.pumpWidget(

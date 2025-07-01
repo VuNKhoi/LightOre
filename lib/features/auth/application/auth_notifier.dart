@@ -2,7 +2,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lightore/repositories/auth_repository.dart';
-import 'package:meta/meta.dart';
 import 'auth_state.dart';
 
 class AuthNotifier extends StateNotifier<AuthState> {
@@ -77,5 +76,11 @@ class AuthNotifier extends StateNotifier<AuthState> {
     } catch (e) {
       rethrow;
     }
+  }
+
+  Future<void> initializeGoogleSignIn(
+      {String? clientId, String? serverClientId}) async {
+    await _authRepository.initializeGoogleSignIn(
+        clientId: clientId, serverClientId: serverClientId);
   }
 }
