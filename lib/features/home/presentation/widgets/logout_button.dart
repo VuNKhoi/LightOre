@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lightore/features/auth/application/auth_provider.dart';
+import 'package:go_router/go_router.dart';
 
 class LogoutButton extends ConsumerWidget {
   const LogoutButton({super.key});
@@ -10,8 +11,10 @@ class LogoutButton extends ConsumerWidget {
     return ElevatedButton(
       key: const Key('logout_button'),
       onPressed: () async {
+        debugPrint('LogoutButton: pressed');
         await ref.read(authProvider.notifier).logout();
-        // Optionally, you can also clear any local state or show a message
+        debugPrint('LogoutButton: logout() called');
+        context.go('/login');
       },
       child: const Text('Logout'),
     );
