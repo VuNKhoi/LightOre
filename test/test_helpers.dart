@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lightore/core/presentation/auth_gate.dart';
 import 'package:lightore/features/auth/application/auth_notifier.dart';
 import 'package:lightore/features/auth/application/auth_provider.dart';
 import 'package:lightore/features/auth/application/auth_state.dart';
@@ -112,16 +111,23 @@ List<GoRoute> getAuthTestRoutes() {
   return [
     GoRoute(
       path: '/login',
-      builder: (context, state) => const AuthGate(
-        child:
-            Scaffold(body: Text('Login Screen', key: ValueKey('login-screen'))),
+      builder: (context, state) => Scaffold(
+        appBar: AppBar(title: const Text('Login')),
+        body: const Text('Login Screen', key: ValueKey('login-screen')),
       ),
     ),
     GoRoute(
       path: '/home',
-      builder: (context, state) => const AuthGate(
-        child:
-            Scaffold(body: Text('Home Screen', key: ValueKey('home-screen'))),
+      builder: (context, state) => Scaffold(
+        appBar: AppBar(title: const Text('Home')),
+        body: const Text('Home Screen', key: ValueKey('home-screen')),
+      ),
+    ),
+    GoRoute(
+      path: '/register',
+      builder: (context, state) => Scaffold(
+        appBar: AppBar(title: const Text('Register')),
+        body: const Text('Register Screen', key: ValueKey('register-screen')),
       ),
     ),
   ];

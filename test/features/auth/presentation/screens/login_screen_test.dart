@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lightore/features/auth/application/auth_provider.dart';
 import 'package:lightore/features/auth/presentation/screens/login_screen.dart';
+import 'package:lightore/features/auth/presentation/screens/register_screen.dart';
 import 'package:mocktail/mocktail.dart';
 
 import '../../../../test_helpers.dart';
@@ -99,12 +101,32 @@ void main() {
   });
 
   testWidgets('Navigates to register screen', (tester) async {
-    await pumpLogin(tester, onLoginSuccess: (_) {});
-
+    final router = GoRouter(
+      initialLocation: '/login',
+      routes: [
+        GoRoute(
+          path: '/login',
+          builder: (context, state) => const LoginScreen(),
+        ),
+        GoRoute(
+          path: '/register',
+          builder: (context, state) => const RegisterScreen(),
+        ),
+      ],
+    );
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          authProvider
+              .overrideWith((ref) => MockAuthNotifier(mockAuthRepository)),
+        ],
+        child: MaterialApp.router(routerConfig: router),
+      ),
+    );
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('go_to_register_button')));
     await tester.pumpAndSettle();
-
-    expect(find.byKey(const Key('register-screen')), findsOneWidget);
+    expect(find.widgetWithText(AppBar, 'Register'), findsOneWidget);
   });
 
   testWidgets('Error/info messages clear on input change', (tester) async {
