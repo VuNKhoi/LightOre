@@ -1,7 +1,7 @@
 // lib/features/auth/application/auth_notifier.dart
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lightore/repositories/auth_repository.dart';
-import 'package:meta/meta.dart';
 import 'auth_state.dart';
 
 class AuthNotifier extends StateNotifier<AuthState> {
@@ -32,9 +32,14 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   Future<bool> logout() async {
+    debugPrint('AuthNotifier: logout() called');
+    await _authRepository.signOut(); // Ensure Firebase sign out
     final success = await _authRepository.setAuthenticated(false);
     if (success) {
       state = AuthState.unauthenticated();
+      debugPrint('AuthNotifier: state set to unauthenticated');
+    } else {
+      debugPrint('AuthNotifier: setAuthenticated(false) failed');
     }
     return success;
   }
@@ -45,5 +50,37 @@ class AuthNotifier extends StateNotifier<AuthState> {
       state = AuthState.unknown();
     }
     return success;
+  }
+
+  Future<void> registerWithEmail(String email, String password) async {
+    try {
+      await _authRepository.registerWithEmail(email, password);
+      state = AuthState.authenticated();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> signInWithEmail(String email, String password) async {
+    try {
+      await _authRepository.signInWithEmail(email, password);
+      state = AuthState.authenticated();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> sendPasswordResetEmail(String email) async {
+    try {
+      await _authRepository.sendPasswordResetEmail(email);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> initializeGoogleSignIn(
+      {String? clientId, String? serverClientId}) async {
+    await _authRepository.initializeGoogleSignIn(
+        clientId: clientId, serverClientId: serverClientId);
   }
 }
