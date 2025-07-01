@@ -25,12 +25,21 @@ GoRouter createAppRouter(WidgetRef ref) {
     redirect: (context, state) {
       final authState = ref.read(authProvider);
       final location = state.fullPath;
+      debugPrint(
+          'GoRouter redirect: authStatus=${authState.status}, location=$location');
       if (authState.status == AuthStatus.unknown ||
           authState.status == AuthStatus.unauthenticated) {
-        if (location != '/login') return '/login';
+        if (location != '/login' && location != '/register') {
+          debugPrint('Redirecting unauthenticated user to /login');
+          return '/login';
+        }
       } else if (authState.status == AuthStatus.authenticated) {
-        if (location != '/home') return '/home';
+        if (location != '/home') {
+          debugPrint('Redirecting authenticated user to /home');
+          return '/home';
+        }
       }
+      debugPrint('No redirect');
       return null;
     },
     routes: [

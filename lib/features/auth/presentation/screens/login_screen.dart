@@ -167,12 +167,21 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   Widget _buildRegisterButton() => TextButton(
         key: const Key('go_to_register_button'),
-        onPressed: _loading ? null : () => context.go('/register'),
+        onPressed: _loading
+            ? null
+            : () {
+                debugPrint('Register button pressed');
+                debugPrint(
+                    'Current route before go: \\${GoRouter.of(context).routerDelegate.currentConfiguration.fullPath}');
+                context.go('/register');
+                debugPrint('context.go(/register) called');
+              },
         child: const Text('Don\'t have an account? Register'),
       );
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('LoginScreen build called');
     return Scaffold(
       appBar: AppBar(title: const Text('Login or Pay')),
       body: Center(

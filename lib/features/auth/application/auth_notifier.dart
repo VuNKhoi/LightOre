@@ -1,4 +1,5 @@
 // lib/features/auth/application/auth_notifier.dart
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lightore/repositories/auth_repository.dart';
 import 'package:meta/meta.dart';
@@ -32,9 +33,14 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   Future<bool> logout() async {
+    debugPrint('AuthNotifier: logout() called');
+    await _authRepository.signOut(); // Ensure Firebase sign out
     final success = await _authRepository.setAuthenticated(false);
     if (success) {
       state = AuthState.unauthenticated();
+      debugPrint('AuthNotifier: state set to unauthenticated');
+    } else {
+      debugPrint('AuthNotifier: setAuthenticated(false) failed');
     }
     return success;
   }

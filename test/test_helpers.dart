@@ -52,7 +52,12 @@ void expectRouterLocation(GoRouter router, String location) {
 }
 
 // Mock AuthRepository
-class MockAuthRepository extends Mock implements AuthRepository {}
+class MockAuthRepository extends Mock implements AuthRepository {
+  @override
+  Future<void> signOut() async {}
+  @override
+  Future<bool> setAuthenticated(bool isAuthenticated) async => true;
+}
 
 // Test AuthNotifier
 /// A [MockAuthNotifier] for use in widget and provider tests.
