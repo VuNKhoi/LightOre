@@ -1,6 +1,7 @@
 // lib/features/auth/presentation/screens/login_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:lightore/features/auth/application/auth_provider.dart';
 import 'auth_error_mapper.dart';
 
@@ -31,11 +32,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       await ref.read(authProvider.notifier).signInWithEmail(_email, _password);
       if (!mounted) return;
       // debugPrint('LOGIN: Success, calling onLoginSuccess? [4mwidget.onLoginSuccess != null[24m');
-      if (widget.onLoginSuccess != null) {
-        widget.onLoginSuccess!(context);
-      } else {
-        Navigator.of(context).pushReplacementNamed('/home');
-      }
+      widget.onLoginSuccess?.call(context);
+      context.go('/home');
     } catch (e) {
       // debugPrint('LOGIN: Exception caught: ' + e.toString());
       _setError(mapAuthErrorToMessage(e));
@@ -169,9 +167,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   Widget _buildRegisterButton() => TextButton(
         key: const Key('go_to_register_button'),
-        onPressed: _loading
-            ? null
-            : () => Navigator.of(context).pushReplacementNamed('/register'),
+        onPressed: _loading ? null : () => context.go('/register'),
         child: const Text('Don\'t have an account? Register'),
       );
 

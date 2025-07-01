@@ -8,21 +8,8 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Home')),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-              onPressed: () {
-                // Add any functionality you want here
-                // For example, logout or navigate to another screen
-              },
-              child: const Text('Go to Another Screen'),
-            ),
-            const SizedBox(height: 20),
-            const LogoutButton(),
-          ],
-        ),
+      body: const Center(
+        child: LogoutButton(),
       ),
     );
   }
