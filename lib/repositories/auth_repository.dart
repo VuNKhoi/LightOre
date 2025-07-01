@@ -1,5 +1,6 @@
 // lib/repositories/auth_repository.dart
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthRepository {
@@ -63,5 +64,29 @@ class AuthRepository {
     } catch (_) {
       return false;
     }
+  }
+
+  /// Signs in with Google.
+  Future<UserCredential> signInWithGoogle() async {
+    final signIn = GoogleSignIn.instance;
+    GoogleSignInAccount? user;
+    if (signIn.supportsAuthenticate()) {
+      user = await signIn.authenticate();
+    } else {
+      throw Exception('Google sign-in not supported on this platform');
+    }
+    // user cannot be null after authenticate()
+    final auth = await user.authentication;
+    final credential = GoogleAuthProvider.credential(
+      idToken: auth.idToken,
+    );
+    return await FirebaseAuth.instance.signInWithCredential(credential);
+  }
+
+  /// Initializes Google Sign-In.
+  Future<void> initializeGoogleSignIn(
+      {String? clientId, String? serverClientId}) async {
+    final signIn = GoogleSignIn.instance;
+    await signIn.initialize(clientId: clientId, serverClientId: serverClientId);
   }
 }

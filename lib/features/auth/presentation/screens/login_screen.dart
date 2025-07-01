@@ -3,7 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lightore/features/auth/application/auth_provider.dart';
-import 'auth_error_mapper.dart';
+import 'package:lightore/constants.dart';
+import '../widgets/error_banner.dart';
+import '../widgets/info_banner.dart';
+import '../widgets/email_field.dart';
+import '../widgets/password_field.dart';
+import '../widgets/google_login_button.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key, this.onLoginSuccess});
@@ -99,59 +104,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   // --- Widget Builders ---
-  Widget _buildError() => _errorMessage == null
-      ? const SizedBox.shrink()
-      : Column(children: [
-          Text(_errorMessage!, style: const TextStyle(color: Colors.red)),
-          const SizedBox(height: 16),
-        ]);
-
-  Widget _buildInfo() => _infoMessage == null
-      ? const SizedBox.shrink()
-      : Column(children: [
-          Text(_infoMessage!, style: const TextStyle(color: Colors.green)),
-          const SizedBox(height: 16),
-        ]);
-
-  Widget _buildEmailField() => TextFormField(
-        key: const Key('login_email_field'),
-        decoration: const InputDecoration(labelText: 'Email'),
-        keyboardType: TextInputType.emailAddress,
-        autofocus: true,
-        onChanged: (v) {
-          if (v != _email) {
-            setState(() {
-              _email = v;
-              _clearMessages();
-            });
-          }
-        },
-        validator: (v) =>
-            v != null && v.contains('@') ? null : 'Enter a valid email',
-      );
-
-  Widget _buildPasswordField() => TextFormField(
-        key: const Key('login_password_field'),
-        decoration: const InputDecoration(labelText: 'Password'),
-        obscureText: true,
-        onChanged: (v) {
-          if (v != _password) {
-            setState(() {
-              _password = v;
-              _clearMessages();
-            });
-          }
-        },
-        validator: (v) => v != null && v.length >= 6 ? null : 'Min 6 chars',
-      );
-
   Widget _buildLoginButton() {
     final canLogin = _canLogin();
-    // debugPrint('BUILD LOGIN BUTTON: loading=$_loading, canLogin=$canLogin');
     return ElevatedButton(
-      key: const Key('login_button'),
+      key: AppKeys.loginButton,
       onPressed: _loading || !canLogin ? null : _login,
-      child: _loading ? const CircularProgressIndicator() : const Text('Login'),
+      style: AppTheme.buttonStyle,
+      child: _loading
+          ? const CircularProgressIndicator()
+          : const Text(AppLabels.login),
     );
   }
 
@@ -160,23 +121,21 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Widget _buildForgotPasswordButton() => TextButton(
-        key: const Key('forgot_password_button'),
+        key: AppKeys.forgotPasswordButton,
         onPressed: _loading ? null : _resetPassword,
-        child: const Text('Forgot password?'),
+        child: const Text(AppLabels.forgotPassword),
       );
 
   Widget _buildRegisterButton() => TextButton(
-        key: const Key('go_to_register_button'),
+        key: AppKeys.registerButton,
         onPressed: _loading
             ? null
             : () {
                 debugPrint('Register button pressed');
-                debugPrint(
-                    'Current route before go: \\${GoRouter.of(context).routerDelegate.currentConfiguration.fullPath}');
-                context.go('/register');
+                context.go(AppRoutes.register);
                 debugPrint('context.go(/register) called');
               },
-        child: const Text('Don\'t have an account? Register'),
+        child: const Text(AppLabels.register),
       );
 
   @override
@@ -192,15 +151,27 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _buildError(),
-                _buildInfo(),
-                _buildEmailField(),
+                ErrorBanner(message: _errorMessage),
+                InfoBanner(message: _infoMessage),
+                EmailField(
+                  value: _email,
+                  onChanged: (v) => setState(() => _email = v),
+                  onClearMessages: _clearMessages,
+                ),
                 const SizedBox(height: 16),
-                _buildPasswordField(),
+                PasswordField(
+                  value: _password,
+                  onChanged: (v) => setState(() => _password = v),
+                  onClearMessages: _clearMessages,
+                ),
                 const SizedBox(height: 24),
                 _buildLoginButton(),
                 _buildForgotPasswordButton(),
                 _buildRegisterButton(),
+                GoogleLoginButton(
+                  loading: _loading,
+                  onError: (msg) => _setError(msg),
+                ),
               ],
             ),
           ),

@@ -14,7 +14,9 @@ class LogoutButton extends ConsumerWidget {
         debugPrint('LogoutButton: pressed');
         await ref.read(authProvider.notifier).logout();
         debugPrint('LogoutButton: logout() called');
-        context.go('/login');
+        if (context.mounted) {
+          context.go('/login');
+        }
       },
       child: const Text('Logout'),
     );
