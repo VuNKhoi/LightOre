@@ -52,12 +52,7 @@ void expectRouterLocation(GoRouter router, String location) {
 }
 
 // Mock AuthRepository
-class MockAuthRepository extends Mock implements AuthRepository {
-  @override
-  Future<void> signOut() async {}
-  @override
-  Future<bool> setAuthenticated(bool isAuthenticated) async => true;
-}
+class MockAuthRepository extends Mock implements AuthRepository {}
 
 // Test AuthNotifier
 /// A [MockAuthNotifier] for use in widget and provider tests.
@@ -148,11 +143,7 @@ ProviderContainer createTestProviderContainer(
 // Helper function to create and mock the AuthRepository
 MockAuthRepository createMockAuthRepository() {
   final mockAuthRepository = MockAuthRepository();
-  when(() => mockAuthRepository.setAuthenticated(any()))
-      .thenAnswer((_) async => true);
-  when(() => mockAuthRepository.clear()).thenAnswer((_) async => true);
-  when(() => mockAuthRepository.isAuthenticated())
-      .thenAnswer((_) async => null);
+  // Remove all default stubs here; all stubbing should be done in each test.
   return mockAuthRepository;
 }
 

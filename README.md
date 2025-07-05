@@ -36,6 +36,24 @@ LightOre is a modular, testable Flutter application inspired by Boeing ForeFligh
 - **Dependency injection**: Map engine selection is configurable for easy migration.
 - **Offline-first**: The architecture anticipates offline support from the start.
 
+## Aviation Overlays & Airspace Data
+
+LightOre is designed to support advanced aviation features such as FAA chart overlays, airspace boundaries, and (optionally) terrain visualization. These features are enabled by integrating open and authoritative data sources:
+
+- **Airspace Boundaries:**
+  - Sourced from [OpenAIP](https://www.openaip.net/) (global, GeoJSON), FAA (US, Shapefile/GeoJSON), Eurocontrol (Europe, AIXM/GeoJSON), and other open-data projects.
+  - Data includes lines and polygons for all major airspace classes, restricted areas, and more.
+  - Data is regularly updated and can be automated via APIs or scheduled downloads.
+- **FAA Sectional/IFR Overlays:**
+  - FAA raster charts can be processed into XYZ tiles and overlaid as raster layers.
+- **Terrain Visualization:**
+  - MapLibre supports 3D terrain using DEM tiles; flutter_map supports raster hillshading and custom layers.
+
+### Compatibility
+- All airspace and overlay data (GeoJSON, KML, Shapefile) can be rendered as vector or raster overlays in both **flutter_map** and **MapLibre**.
+- The app's map abstraction ensures seamless integration and future migration between mapping engines.
+- Styling, interactivity, and offline support are supported in both approaches.
+
 ## Project Structure
 ```
 lib/
@@ -67,6 +85,7 @@ integration_test/
 - Build out the `BaseMapView` abstraction.
 - Prepare FAA chart tiling and hosting pipeline.
 - Migrate to MapLibre for open-source, offline, and scalable deployment.
+- Integrate advanced aviation overlays and ensure compatibility with flutter_map and MapLibre.
 
 ## Contributing
 - Follow the feature-based folder structure and keep business logic out of UI widgets.

@@ -76,7 +76,7 @@ class AuthRepository {
       throw Exception('Google sign-in not supported on this platform');
     }
     // user cannot be null after authenticate()
-    final auth = await user.authentication;
+    final auth = user.authentication;
     final credential = GoogleAuthProvider.credential(
       idToken: auth.idToken,
     );

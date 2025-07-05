@@ -57,15 +57,26 @@ void main() {
     testWidgets('Tapping logout button calls logout on notifier',
         (tester) async {
       final mockAuthRepository = MockAuthRepository();
-      // Ensure isAuthenticated returns a Future as expected by AuthNotifier
-      when(() => mockAuthRepository.isAuthenticated())
-          .thenAnswer((_) async => null);
+      when(() => mockAuthRepository.isAuthenticated()).thenAnswer((_) async => null);
+      when(() => mockAuthRepository.setAuthenticated(any())).thenAnswer((_) async => true);
+      when(() => mockAuthRepository.signOut()).thenAnswer((_) async {});
       final notifier = TrackingAuthNotifier(mockAuthRepository);
-      await pumpHomeScreenWithProvider(tester, notifier: notifier);
-
+      await pumpWidgetWithRouter(
+        tester: tester,
+        initialLocation: '/home',
+        routes: {
+          '/home': ProviderScope(
+            overrides: [authProvider.overrideWith((ref) => notifier)],
+            child: const HomeScreen(),
+          ),
+          '/login': const Scaffold(body: Text('Login', key: Key('login-screen'))),
+        },
+      );
       await tester.tap(find.byKey(const Key('logout_button')));
-      await tester.pump();
+      await tester.pumpAndSettle();
       expect(notifier.logoutCalled, isTrue);
+      // Check navigation to login
+      expect(find.byKey(const Key('login-screen')), findsOneWidget);
     });
   });
 }
