@@ -13,6 +13,8 @@ void main() {
     final mockAuthRepository = MockAuthRepository();
     when(() => mockAuthRepository.isAuthenticated())
         .thenAnswer((_) async => false);
+    when(() => mockAuthRepository.signOut()).thenAnswer((_) async {});
+    when(() => mockAuthRepository.setAuthenticated(any())).thenAnswer((_) async => true);
     final mockNotifier = MockAuthNotifier(mockAuthRepository);
     final router = GoRouter(
       initialLocation: '/home',
