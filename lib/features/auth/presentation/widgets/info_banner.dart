@@ -3,7 +3,7 @@ import 'package:lightore/constants.dart';
 
 class InfoBanner extends StatelessWidget {
   final String? message;
-  const InfoBanner({Key? key, this.message}) : super(key: key);
+  const InfoBanner({super.key, this.message});
 
   @override
   Widget build(BuildContext context) {

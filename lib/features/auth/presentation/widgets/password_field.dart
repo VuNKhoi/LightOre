@@ -6,11 +6,10 @@ class PasswordField extends StatelessWidget {
   final ValueChanged<String> onChanged;
   final VoidCallback onClearMessages;
   const PasswordField(
-      {Key? key,
+      {super.key,
       required this.value,
       required this.onChanged,
-      required this.onClearMessages})
-      : super(key: key);
+      required this.onClearMessages});
 
   @override
   Widget build(BuildContext context) {
