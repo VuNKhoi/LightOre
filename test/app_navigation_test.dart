@@ -14,6 +14,8 @@ void main() {
 
     setUp(() {
       mockAuthRepository = createMockAuthRepository();
+      when(() => mockAuthRepository.setAuthenticated(any())).thenAnswer((_) async => true);
+      when(() => mockAuthRepository.signOut()).thenAnswer((_) async {});
     });
 
     testWidgets('Shows login screen when unauthenticated', (tester) async {

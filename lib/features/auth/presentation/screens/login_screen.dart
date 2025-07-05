@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lightore/features/auth/application/auth_provider.dart';
 import 'package:lightore/constants.dart';
+import 'package:lightore/features/auth/presentation/screens/auth_error_mapper.dart';
 import '../widgets/error_banner.dart';
 import '../widgets/info_banner.dart';
 import '../widgets/email_field.dart';

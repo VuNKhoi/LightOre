@@ -42,6 +42,9 @@ void main() {
 
   testWidgets('Login success navigates to /home', (tester) async {
     bool navigated = false;
+    when(() => mockAuthRepository.isAuthenticated()).thenAnswer((_) async => null);
+    when(() => mockAuthRepository.setAuthenticated(any())).thenAnswer((_) async => true);
+    when(() => mockAuthRepository.signOut()).thenAnswer((_) async {});
     when(() => mockAuthRepository.signInWithEmail(any(), any()))
         .thenAnswer((_) async => MockUserCredential());
     await pumpLogin(tester, onLoginSuccess: (_) => navigated = true);
@@ -58,6 +61,9 @@ void main() {
   });
 
   testWidgets('Login failure shows error', (tester) async {
+    when(() => mockAuthRepository.isAuthenticated()).thenAnswer((_) async => null);
+    when(() => mockAuthRepository.setAuthenticated(any())).thenAnswer((_) async => true);
+    when(() => mockAuthRepository.signOut()).thenAnswer((_) async {});
     when(() => mockAuthRepository.signInWithEmail(any(), any()))
         .thenThrow(Exception('Login failed'));
     await pumpLogin(tester, onLoginSuccess: (_) {});
@@ -78,6 +84,9 @@ void main() {
   });
 
   testWidgets('Password reset success shows info message', (tester) async {
+    when(() => mockAuthRepository.isAuthenticated()).thenAnswer((_) async => null);
+    when(() => mockAuthRepository.setAuthenticated(any())).thenAnswer((_) async => true);
+    when(() => mockAuthRepository.signOut()).thenAnswer((_) async {});
     when(() => mockAuthRepository.sendPasswordResetEmail(any()))
         .thenAnswer((_) async => Future.value());
     await pumpLogin(tester, onLoginSuccess: (_) {});
@@ -92,6 +101,9 @@ void main() {
   });
 
   testWidgets('Password reset with empty email shows error', (tester) async {
+    when(() => mockAuthRepository.isAuthenticated()).thenAnswer((_) async => null);
+    when(() => mockAuthRepository.setAuthenticated(any())).thenAnswer((_) async => true);
+    when(() => mockAuthRepository.signOut()).thenAnswer((_) async {});
     await pumpLogin(tester, onLoginSuccess: (_) {});
 
     await tester.tap(find.byKey(const Key('forgot_password_button')));
@@ -101,6 +113,9 @@ void main() {
   });
 
   testWidgets('Navigates to register screen', (tester) async {
+    when(() => mockAuthRepository.isAuthenticated()).thenAnswer((_) async => null);
+    when(() => mockAuthRepository.setAuthenticated(any())).thenAnswer((_) async => true);
+    when(() => mockAuthRepository.signOut()).thenAnswer((_) async {});
     final router = GoRouter(
       initialLocation: '/login',
       routes: [
@@ -130,6 +145,9 @@ void main() {
   });
 
   testWidgets('Error/info messages clear on input change', (tester) async {
+    when(() => mockAuthRepository.isAuthenticated()).thenAnswer((_) async => null);
+    when(() => mockAuthRepository.setAuthenticated(any())).thenAnswer((_) async => true);
+    when(() => mockAuthRepository.signOut()).thenAnswer((_) async {});
     when(() => mockAuthRepository.signInWithEmail(any(), any()))
         .thenThrow(Exception('Login failed'));
     await pumpLogin(tester, onLoginSuccess: (_) {});
@@ -153,6 +171,9 @@ void main() {
   });
 
   testWidgets('Login button disabled if fields are empty', (tester) async {
+    when(() => mockAuthRepository.isAuthenticated()).thenAnswer((_) async => null);
+    when(() => mockAuthRepository.setAuthenticated(any())).thenAnswer((_) async => true);
+    when(() => mockAuthRepository.signOut()).thenAnswer((_) async {});
     await pumpLogin(tester, onLoginSuccess: (_) {});
 
     var loginButton =
