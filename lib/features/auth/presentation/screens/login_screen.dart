@@ -108,7 +108,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Widget _buildLoginButton() {
     final canLogin = _canLogin();
     return ElevatedButton(
-      key: AppKeys.loginButton,
+      key: const ValueKey('login_button'),
       onPressed: _loading || !canLogin ? null : _login,
       style: AppTheme.buttonStyle,
       child: _loading

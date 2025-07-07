@@ -3,7 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lightore/features/auth/application/auth_provider.dart';
 import 'package:lightore/features/home/presentation/screens/home_screen.dart';
-import 'package:mocktail/mocktail.dart';
+import 'package:lightore/features/map/widgets/base_map_view.dart';
+import 'package:lightore/features/options/widgets/option_bubble.dart';
 
 import '../../../../test_helpers.dart';
 
@@ -37,7 +38,7 @@ Future<void> pumpHomeScreenWithProvider(
 
 void main() {
   group('HomeScreen', () {
-    testWidgets('displays title and logout button', (tester) async {
+    testWidgets('displays map and option bubble', (tester) async {
       await pumpWidgetWithRouter(
         tester: tester,
         initialLocation: '/home',
@@ -46,37 +47,22 @@ void main() {
         },
       );
 
-      // Verify the title is shown
-      expect(find.text('Home'), findsOneWidget);
-      // Verify the logout button is shown
-      expect(find.byKey(const Key('logout_button')), findsOneWidget);
-      expect(find.text('Logout'), findsOneWidget);
-      // No redundant crash test: only meaningful behavior is tested
+      // Verify the BaseMapView is shown
+      expect(find.byType(BaseMapView), findsOneWidget);
+      // Verify the OptionBubble is shown
+      expect(find.byType(OptionBubble), findsOneWidget);
+      // Should NOT find AppBar, title, or logout button
+      expect(find.text('Home'), findsNothing);
+      expect(find.byKey(const Key('logout_button')), findsNothing);
+      expect(find.text('Logout'), findsNothing);
     });
 
-    testWidgets('Tapping logout button calls logout on notifier',
-        (tester) async {
-      final mockAuthRepository = MockAuthRepository();
-      when(() => mockAuthRepository.isAuthenticated()).thenAnswer((_) async => null);
-      when(() => mockAuthRepository.setAuthenticated(any())).thenAnswer((_) async => true);
-      when(() => mockAuthRepository.signOut()).thenAnswer((_) async {});
-      final notifier = TrackingAuthNotifier(mockAuthRepository);
-      await pumpWidgetWithRouter(
-        tester: tester,
-        initialLocation: '/home',
-        routes: {
-          '/home': ProviderScope(
-            overrides: [authProvider.overrideWith((ref) => notifier)],
-            child: const HomeScreen(),
-          ),
-          '/login': const Scaffold(body: Text('Login', key: Key('login-screen'))),
-        },
-      );
-      await tester.tap(find.byKey(const Key('logout_button')));
-      await tester.pumpAndSettle();
-      expect(notifier.logoutCalled, isTrue);
-      // Check navigation to login
-      expect(find.byKey(const Key('login-screen')), findsOneWidget);
+    testWidgets('HomeScreen displays BaseMapView after login', (WidgetTester tester) async {
+      await tester.pumpWidget(const MaterialApp(
+        home: HomeScreen(),
+      ));
+      expect(find.byType(HomeScreen), findsOneWidget);
+      expect(find.byType(BaseMapView), findsOneWidget);
     });
   });
 }
