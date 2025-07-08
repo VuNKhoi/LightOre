@@ -9,8 +9,7 @@ class GoogleLoginButton extends StatefulWidget {
   final void Function(String error)? onError;
   final void Function()? onSuccess;
   const GoogleLoginButton(
-      {Key? key, required this.loading, this.onError, this.onSuccess})
-      : super(key: key);
+      {super.key, required this.loading, this.onError, this.onSuccess});
 
   @override
   State<GoogleLoginButton> createState() => _GoogleLoginButtonState();

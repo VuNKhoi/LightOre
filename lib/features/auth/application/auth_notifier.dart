@@ -32,14 +32,10 @@ class AuthNotifier extends StateNotifier<AuthState> {
   }
 
   Future<bool> logout() async {
-    debugPrint('AuthNotifier: logout() called');
     await _authRepository.signOut(); // Ensure Firebase sign out
     final success = await _authRepository.setAuthenticated(false);
     if (success) {
       state = AuthState.unauthenticated();
-      debugPrint('AuthNotifier: state set to unauthenticated');
-    } else {
-      debugPrint('AuthNotifier: setAuthenticated(false) failed');
     }
     return success;
   }

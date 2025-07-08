@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lightore/features/auth/application/auth_provider.dart';
 
 class AccountScreen extends ConsumerWidget {
-  const AccountScreen({Key? key}) : super(key: key);
+  const AccountScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

@@ -32,7 +32,7 @@ void main() {
       home: Scaffold(
         body: GoogleLoginButton(
           loading: false,
-          onError: mockOnError,
+          onError: mockOnError.call,
         ),
       ),
     ));

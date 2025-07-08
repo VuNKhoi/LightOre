@@ -8,6 +8,10 @@ import 'package:lightore/features/auth/application/auth_state.dart';
 import 'package:lightore/repositories/auth_repository.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:lightore/app.dart' show homeScreenFactory;
+import 'package:lightore/features/home/presentation/screens/home_screen.dart';
+import 'package:lightore/features/map/widgets/base_map_view.dart';
+import 'package:lightore/test/features/home/presentation/screens/home_screen_test.dart' show DummyTileProvider;
 
 /// Builds a ProviderScope or UncontrolledProviderScope for tests, with optional overrides.
 Widget buildProviderScope({
@@ -163,4 +167,61 @@ MockFirebaseAuth createMockFirebaseAuth({
   when(() => mock.authStateChanges()).thenAnswer((_) => authStateStream ?? const Stream.empty());
   when(() => mock.signOut()).thenAnswer((_) async {});
   return mock;
+}
+
+Future<void> pumpHomeScreenWithProvider(
+  WidgetTester tester, {
+  required MockAuthNotifier notifier,
+  Widget? homeScreen,
+}) async {
+  await tester.pumpWidget(
+    ProviderScope(
+      overrides: [
+        authProvider.overrideWith((ref) => notifier),
+      ],
+      child: MaterialApp(
+        home: homeScreen ?? homeScreenFactory(),
+      ),
+    ),
+  );
+}
+
+Future<void> pumpHomeScreenWithScope(WidgetTester tester, {Widget? homeScreen}) async {
+  await tester.pumpWidget(
+    ProviderScope(
+      child: MaterialApp(
+        home: homeScreen ?? HomeScreen(tileProvider: DummyTileProvider()),
+      ),
+    ),
+  );
+}
+
+Future<void> pumpWidgetWithRouterAndScope({
+  required WidgetTester tester,
+  required String initialLocation,
+  required Map<String, Widget> routes,
+}) async {
+  final router = GoRouter(
+    initialLocation: initialLocation,
+    routes: routes.entries
+        .map((entry) => GoRoute(
+              path: entry.key,
+              builder: (context, state) {
+                final widget = entry.value;
+                if (widget is HomeScreen) {
+                  return HomeScreen(tileProvider: DummyTileProvider());
+                }
+                return widget;
+              },
+            ))
+        .toList(),
+  );
+
+  await tester.pumpWidget(
+    ProviderScope(
+      child: MaterialApp.router(
+        routerConfig: router,
+      ),
+    ),
+  );
 }
