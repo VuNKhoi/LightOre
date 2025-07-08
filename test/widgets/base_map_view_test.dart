@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
 import 'package:lightore/features/map/widgets/base_map_view.dart';
+import 'package:lightore/features/map/domain/map_overlay_type.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'dart:typed_data';
 

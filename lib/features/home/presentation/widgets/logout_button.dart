@@ -11,9 +11,7 @@ class LogoutButton extends ConsumerWidget {
     return ElevatedButton(
       key: const Key('logout_button'),
       onPressed: () async {
-        debugPrint('LogoutButton: pressed');
         await ref.read(authProvider.notifier).logout();
-        debugPrint('LogoutButton: logout() called');
         if (context.mounted) {
           context.go('/login');
         }

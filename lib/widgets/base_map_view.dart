@@ -3,12 +3,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 
-/// Enum for supported overlay types
-enum MapOverlayType {
-  sectional,
-  ifrLow,
-  ifrHigh,
-}
+import 'package:lightore/features/map/domain/map_overlay_type.dart'; // Import the enum from the domain
 
 /// BaseMapView abstraction for all map logic and overlays
 class BaseMapView extends StatefulWidget {
@@ -61,6 +56,8 @@ class _BaseMapViewState extends State<BaseMapView> {
         return 'https://your-tile-server/ifr_low/{z}/{x}/{y}.png';
       case MapOverlayType.ifrHigh:
         return 'https://your-tile-server/ifr_high/{z}/{x}/{y}.png';
+      case MapOverlayType.streetMap:
+        return 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
     }
   }
 

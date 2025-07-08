@@ -1,11 +1,11 @@
 // lib/features/auth/application/auth_notifier.dart
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lightore/repositories/auth_repository.dart';
+import 'package:lightore/features/auth/domain/repositories/auth_repository_interface.dart';
 import 'auth_state.dart';
 
 class AuthNotifier extends StateNotifier<AuthState> {
-  final AuthRepository _authRepository;
+  final IAuthRepository _authRepository;
 
   AuthNotifier(this._authRepository) : super(AuthState.unknown()) {
     init();

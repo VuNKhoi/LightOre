@@ -25,7 +25,8 @@ class TestOptionBubbleState extends State<OptionBubble> {
 
 void main() {
   group('OptionBubble', () {
-    testWidgets('bubble is 30% smaller and snaps to nearest edge', (tester) async {
+    testWidgets('bubble is 30% smaller and snaps to nearest edge',
+        (tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(

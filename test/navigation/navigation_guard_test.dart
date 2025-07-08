@@ -7,15 +7,14 @@ import 'package:lightore/navigation/navigation_guard.dart' as nav;
 import 'package:lightore/repositories/auth_repository.dart';
 
 class FakeAuthNotifier extends AuthNotifier {
-  FakeAuthNotifier(AuthState state)
-      : super(_FakeAuthRepository()) {
+  FakeAuthNotifier(AuthState state) : super(_FakeAuthRepository()) {
     super.state = state;
   }
 }
 
 class _FakeAuthRepository implements AuthRepository {
   bool? _isAuthenticated;
-  _FakeAuthRepository([this._isAuthenticated]);
+  _FakeAuthRepository();
 
   @override
   Future<bool?> isAuthenticated() async => _isAuthenticated;

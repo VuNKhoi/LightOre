@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lightore/features/map/widgets/base_map_view.dart';
+import 'package:lightore/features/map/domain/map_overlay_type.dart';
 
 /// A floating option bubble (like a chat head) that expands to show a grid of tiles.
 class OptionBubble extends StatefulWidget {
@@ -234,7 +234,8 @@ class _OptionBubbleState extends State<OptionBubble> {
                 'bottom': height - dy - _bubbleDiameter,
               };
               final nearest = (distances.entries.toList()
-                ..sort((a, b) => a.value.compareTo(b.value)))[0].key;
+                    ..sort((a, b) => a.value.compareTo(b.value)))[0]
+                  .key;
               Offset newOffset;
               switch (nearest) {
                 case 'left':

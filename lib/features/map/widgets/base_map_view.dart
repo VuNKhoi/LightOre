@@ -3,14 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
-
-/// Enum for supported overlay types
-enum MapOverlayType {
-  streetMap, // New default
-  sectional,
-  ifrLow,
-  ifrHigh,
-}
+import 'package:lightore/features/map/domain/map_overlay_type.dart';
+import 'package:lightore/features/map/domain/geolocator_service.dart';
 
 /// BaseMapView abstraction for all map logic and overlays
 class BaseMapViewController {
@@ -25,6 +19,7 @@ class BaseMapView extends StatefulWidget {
   final bool showUserLocation;
   final TileProvider? tileProvider;
   final BaseMapViewController? controller;
+  final IGeolocatorService? geolocatorService;
 
   const BaseMapView({
     super.key,
@@ -32,6 +27,7 @@ class BaseMapView extends StatefulWidget {
     this.showUserLocation = true,
     this.tileProvider,
     this.controller,
+    this.geolocatorService,
   });
 
   @override
@@ -41,10 +37,12 @@ class BaseMapView extends StatefulWidget {
 class _BaseMapViewState extends State<BaseMapView> {
   LatLng? _currentPosition;
   final MapController _mapController = MapController();
+  late final IGeolocatorService _geo;
 
   @override
   void initState() {
     super.initState();
+    _geo = widget.geolocatorService ?? GeolocatorService();
     widget.controller?._attach(this);
     if (widget.showUserLocation) {
       _getCurrentLocation();
@@ -58,8 +56,18 @@ class _BaseMapViewState extends State<BaseMapView> {
   }
 
   Future<void> _getCurrentLocation() async {
+    LocationPermission permission = await _geo.checkPermission();
+    if (permission == LocationPermission.denied ||
+        permission == LocationPermission.deniedForever) {
+      permission = await _geo.requestPermission();
+      if (permission != LocationPermission.always &&
+          permission != LocationPermission.whileInUse) {
+        // Permission denied, do not proceed
+        return;
+      }
+    }
     try {
-      final position = await Geolocator.getCurrentPosition();
+      final position = await _geo.getCurrentPosition();
       setState(() {
         _currentPosition = LatLng(position.latitude, position.longitude);
       });
@@ -103,6 +111,8 @@ class _BaseMapViewState extends State<BaseMapView> {
         TileLayer(
           urlTemplate: _overlayUrlTemplate(widget.overlayType),
           userAgentPackageName: 'com.example.lightore',
+          tileProvider:
+              widget.tileProvider, // <-- use injected provider for all layers
         ),
         if (widget.overlayType != MapOverlayType.streetMap)
           TileLayer(
@@ -128,34 +138,5 @@ class _BaseMapViewState extends State<BaseMapView> {
           ),
       ],
     );
-  }
-}
-
-// UI mapping for MapOverlayType (decoupling enum from UI)
-class MapOverlayTypeViewModel {
-  static String label(MapOverlayType type) {
-    switch (type) {
-      case MapOverlayType.streetMap:
-        return 'Street Map';
-      case MapOverlayType.sectional:
-        return 'Sectional';
-      case MapOverlayType.ifrLow:
-        return 'IFR Low';
-      case MapOverlayType.ifrHigh:
-        return 'IFR High';
-    }
-  }
-
-  static IconData icon(MapOverlayType type) {
-    switch (type) {
-      case MapOverlayType.streetMap:
-        return Icons.map;
-      case MapOverlayType.sectional:
-        return Icons.map;
-      case MapOverlayType.ifrLow:
-        return Icons.alt_route;
-      case MapOverlayType.ifrHigh:
-        return Icons.flight;
-    }
   }
 }

@@ -107,6 +107,18 @@ integration_test/
 
 _These principles ensure LightOre remains modular, testable, and easy to maintain as it grows._
 
+## SOLID Principles & Code Quality
+
+LightOre adheres to the SOLID principles of object-oriented design:
+
+- **S: Single Responsibility Principle (SRP)** — Every class, file, and module should have one responsibility. For example, enums and view models are separated from widgets, and business logic is decoupled from UI.
+- **O: Open/Closed Principle** — Code is open for extension but closed for modification. New map overlays or features can be added without changing core logic.
+- **L: Liskov Substitution Principle** — Subtypes can replace their base types without breaking the app. All abstractions and interfaces are designed for safe extension.
+- **I: Interface Segregation Principle** — Classes and widgets depend only on the interfaces they use. UI, domain, and data layers are separated.
+- **D: Dependency Inversion Principle** — High-level modules do not depend on low-level modules; both depend on abstractions. Providers and dependency injection are used throughout.
+
+All new code and refactors should conform to these principles for maintainability and scalability.
+
 ## Questions for the Team
 1. **Map Abstraction**: Should the `BaseMapView` abstraction be a widget, a service, or both? (Current plan: widget with injectable engine)
 2. **FAA Chart Hosting**: Is there a preferred cloud provider for tile hosting (Cloudflare, S3, or self-hosted)?
