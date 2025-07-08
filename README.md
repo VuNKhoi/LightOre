@@ -10,6 +10,7 @@ LightOre is a modular, testable Flutter application inspired by Boeing ForeFligh
 - **Centralized constants and theming**: All keys, labels, error messages, routes, and styles are defined in `constants.dart` and `theme.dart` for consistency and easy updates.
 - **Comprehensive testing**: Widget and integration tests cover all critical flows, including authentication and error handling.
 - **Map abstraction**: All map-related code is wrapped in a single widget/service layer (e.g., `BaseMapView`) to enable seamless migration from flutter_map to MapLibre.
+- **UI Compactness Principle**: All option menus, popups, and overlays are designed to be as compact and unobtrusive as possible, ensuring maximum map visibility and a focused user experience at all times.
 
 ## Authentication
 - **Email/password and Google Sign-In** using Firebase Auth.
@@ -95,6 +96,16 @@ integration_test/
 - Document all public classes and methods.
 
 ---
+
+## Architectural Principles: Decoupling & Maintainability
+
+- **Routing and Auth Decoupling**: Routing logic should not directly depend on authentication providers. Use navigation guards, services, or event-based patterns to handle redirects and access control.
+- **Screen Construction**: Route definitions should use factories or builders for screen creation, not direct instantiation. This enables dependency injection and easier refactoring.
+- **Provider Abstraction**: UI widgets should depend on interfaces or abstract providers, not concrete implementations. Pass providers as parameters for easier testing and mocking.
+- **Enum/UI Decoupling**: UI code should not directly reference enums for display. Use view models or mapping layers to translate enum values to user-facing strings and icons.
+- **Test-Driven**: All new features and bug fixes should include appropriate widget and logic tests. Fix all failed tests unless the subject is deprecated, hard to test, or integration-only.
+
+_These principles ensure LightOre remains modular, testable, and easy to maintain as it grows._
 
 ## Questions for the Team
 1. **Map Abstraction**: Should the `BaseMapView` abstraction be a widget, a service, or both? (Current plan: widget with injectable engine)

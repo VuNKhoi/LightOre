@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:lightore/features/auth/application/auth_provider.dart';
-import 'package:lightore/features/auth/application/auth_status.dart';
+import 'package:lightore/navigation/navigation_guard.dart';
 import 'features/auth/presentation/screens/login_screen.dart';
 import 'features/auth/presentation/screens/register_screen.dart';
 import 'features/home/presentation/screens/home_screen.dart';
@@ -20,41 +19,31 @@ class LightOreApp extends ConsumerWidget {
 }
 
 GoRouter createAppRouter(WidgetRef ref) {
+  final guard = ref.read(navigationGuardProvider);
   return GoRouter(
     initialLocation: '/home',
     redirect: (context, state) {
-      final authState = ref.read(authProvider);
       final location = state.fullPath;
-      debugPrint(
-          'GoRouter redirect: authStatus=${authState.status}, location=$location');
-      if (authState.status == AuthStatus.unknown ||
-          authState.status == AuthStatus.unauthenticated) {
-        if (location != '/login' && location != '/register') {
-          debugPrint('Redirecting unauthenticated user to /login');
-          return '/login';
-        }
-      } else if (authState.status == AuthStatus.authenticated) {
-        if (location != '/home') {
-          debugPrint('Redirecting authenticated user to /home');
-          return '/home';
-        }
-      }
-      debugPrint('No redirect');
-      return null;
+      return guard.redirect(location);
     },
     routes: [
       GoRoute(
         path: '/login',
-        builder: (context, state) => const LoginScreen(),
-      ),
-      GoRoute(
-        path: '/home',
-        builder: (context, state) => const HomeScreen(),
+        builder: (context, state) => loginScreenFactory(),
       ),
       GoRoute(
         path: '/register',
-        builder: (context, state) => const RegisterScreen(),
+        builder: (context, state) => registerScreenFactory(),
+      ),
+      GoRoute(
+        path: '/home',
+        builder: (context, state) => homeScreenFactory(),
       ),
     ],
   );
 }
+
+// Factories for screen construction (for DI/mocking)
+Widget loginScreenFactory() => const LoginScreen();
+Widget registerScreenFactory() => const RegisterScreen();
+Widget homeScreenFactory() => const HomeScreen();

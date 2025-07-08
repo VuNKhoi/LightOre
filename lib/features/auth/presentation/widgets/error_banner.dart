@@ -3,7 +3,7 @@ import 'package:lightore/constants.dart';
 
 class ErrorBanner extends StatelessWidget {
   final String? message;
-  const ErrorBanner({Key? key, this.message}) : super(key: key);
+  const ErrorBanner({super.key, this.message});
 
   @override
   Widget build(BuildContext context) {

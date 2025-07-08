@@ -78,11 +78,12 @@ class _BaseMapViewState extends State<BaseMapView> {
   Widget build(BuildContext context) {
     return FlutterMap(
       options: MapOptions(
-        initialCenter: _currentPosition ?? const LatLng(39.8283, -98.5795), // Default: USA center
+        initialCenter: _currentPosition ??
+            const LatLng(39.8283, -98.5795), // Default: USA center
         initialZoom: 6,
       ),
       children: [
-        const TileLayer(
+        TileLayer(
           urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
           userAgentPackageName: 'com.example.lightore',
         ),

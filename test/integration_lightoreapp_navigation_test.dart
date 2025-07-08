@@ -15,7 +15,8 @@ void main() {
 
     setUp(() {
       mockAuthRepository = MockAuthRepository();
-      when(() => mockAuthRepository.setAuthenticated(any())).thenAnswer((_) async => true);
+      when(() => mockAuthRepository.setAuthenticated(any()))
+          .thenAnswer((_) async => true);
       when(() => mockAuthRepository.signOut()).thenAnswer((_) async {});
     });
 
