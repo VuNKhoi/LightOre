@@ -2,9 +2,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:lightore/features/map/widgets/base_map_view.dart';
+import 'package:lightore/features/map/domain/map_overlay_type.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geolocator_platform_interface/geolocator_platform_interface.dart';
 import 'dart:typed_data';
+import 'package:lightore/features/map/domain/geolocator_service.dart';
 
 class DummyTileProvider extends TileProvider {
   @override
@@ -86,7 +88,8 @@ class DummyTileProvider extends TileProvider {
 
 class FakeGeolocatorPlatform extends GeolocatorPlatform {
   @override
-  Future<Position> getCurrentPosition({LocationSettings? locationSettings}) async {
+  Future<Position> getCurrentPosition(
+      {LocationSettings? locationSettings}) async {
     return Position(
       latitude: 37.7749,
       longitude: -122.4194,
@@ -103,6 +106,29 @@ class FakeGeolocatorPlatform extends GeolocatorPlatform {
   }
 }
 
+class FakeGeolocatorService implements IGeolocatorService {
+  @override
+  Future<LocationPermission> checkPermission() async =>
+      LocationPermission.always;
+  @override
+  Future<LocationPermission> requestPermission() async =>
+      LocationPermission.always;
+  @override
+  Future<Position> getCurrentPosition() async => Position(
+        latitude: 37.7749,
+        longitude: -122.4194,
+        timestamp: DateTime.now(),
+        accuracy: 1.0,
+        altitude: 0.0,
+        heading: 0.0,
+        speed: 0.0,
+        speedAccuracy: 0.0,
+        headingAccuracy: 0.0,
+        altitudeAccuracy: 0.0,
+        isMocked: true,
+      );
+}
+
 void main() {
   setUpAll(() {
     GeolocatorPlatform.instance = FakeGeolocatorPlatform();
@@ -117,6 +143,7 @@ void main() {
             overlayType: MapOverlayType.sectional,
             showUserLocation: false, // skip location for test
             tileProvider: DummyTileProvider(),
+            geolocatorService: FakeGeolocatorService(),
           ),
         ),
       ));
@@ -133,20 +160,21 @@ void main() {
             overlayType: MapOverlayType.ifrLow,
             showUserLocation: false,
             tileProvider: DummyTileProvider(),
+            geolocatorService: FakeGeolocatorService(),
           ),
         ),
       ));
       expect(find.byType(BaseMapView), findsOneWidget);
     });
 
-    testWidgets('does not throw ClientException in test',
-        (tester) async {
+    testWidgets('does not throw ClientException in test', (tester) async {
       await tester.pumpWidget(MaterialApp(
         home: Scaffold(
           body: BaseMapView(
             overlayType: MapOverlayType.sectional,
             showUserLocation: false,
             tileProvider: DummyTileProvider(),
+            geolocatorService: FakeGeolocatorService(),
           ),
         ),
       ));
@@ -164,6 +192,7 @@ void main() {
             showUserLocation: true,
             tileProvider: DummyTileProvider(),
             controller: controller,
+            geolocatorService: FakeGeolocatorService(),
           ),
         ),
       ));

@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:lightore/features/auth/application/auth_state.dart';
-import 'package:lightore/features/auth/application/auth_status.dart';
+import 'package:lightore/features/auth/domain/auth_status.dart';
 
 void main() {
   group('AuthState', () {

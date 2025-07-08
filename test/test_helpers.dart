@@ -5,13 +5,12 @@ import 'package:go_router/go_router.dart';
 import 'package:lightore/features/auth/application/auth_notifier.dart';
 import 'package:lightore/features/auth/application/auth_provider.dart';
 import 'package:lightore/features/auth/application/auth_state.dart';
-import 'package:lightore/repositories/auth_repository.dart';
+import 'package:lightore/features/auth/domain/repositories/auth_repository_interface.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:lightore/app.dart' show homeScreenFactory;
 import 'package:lightore/features/home/presentation/screens/home_screen.dart';
-import 'package:lightore/features/map/widgets/base_map_view.dart';
-import 'package:lightore/test/features/home/presentation/screens/home_screen_test.dart' show DummyTileProvider;
+import 'package:lightore/repositories/auth_repository.dart';
 
 /// Builds a ProviderScope or UncontrolledProviderScope for tests, with optional overrides.
 Widget buildProviderScope({
@@ -74,7 +73,8 @@ Future<void> pumpLoginScreenWithRouter(WidgetTester tester,
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
-        authProvider.overrideWith((ref) => MockAuthNotifier(mockAuthRepository)),
+        authProvider
+            .overrideWith((ref) => MockAuthNotifier(mockAuthRepository)),
       ],
       child: MaterialApp.router(
         routerConfig: router,
@@ -153,7 +153,9 @@ MockAuthRepository createMockAuthRepository() {
 
 // Mock classes for FirebaseAuth
 class MockFirebaseAuth extends Mock implements FirebaseAuth {}
+
 class MockUserCredential extends Mock implements UserCredential {}
+
 class MockUser extends Mock implements User {}
 
 // Helper to set up mock FirebaseAuth for AuthRepository tests
@@ -164,7 +166,8 @@ MockFirebaseAuth createMockFirebaseAuth({
 }) {
   final mock = MockFirebaseAuth();
   when(() => mock.currentUser).thenReturn(user);
-  when(() => mock.authStateChanges()).thenAnswer((_) => authStateStream ?? const Stream.empty());
+  when(() => mock.authStateChanges())
+      .thenAnswer((_) => authStateStream ?? const Stream.empty());
   when(() => mock.signOut()).thenAnswer((_) async {});
   return mock;
 }
@@ -186,11 +189,12 @@ Future<void> pumpHomeScreenWithProvider(
   );
 }
 
-Future<void> pumpHomeScreenWithScope(WidgetTester tester, {Widget? homeScreen}) async {
+Future<void> pumpHomeScreenWithScope(WidgetTester tester,
+    {Widget? homeScreen}) async {
   await tester.pumpWidget(
     ProviderScope(
       child: MaterialApp(
-        home: homeScreen ?? HomeScreen(tileProvider: DummyTileProvider()),
+        home: homeScreen ?? HomeScreen(),
       ),
     ),
   );
@@ -209,7 +213,7 @@ Future<void> pumpWidgetWithRouterAndScope({
               builder: (context, state) {
                 final widget = entry.value;
                 if (widget is HomeScreen) {
-                  return HomeScreen(tileProvider: DummyTileProvider());
+                  return HomeScreen();
                 }
                 return widget;
               },

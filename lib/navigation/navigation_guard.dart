@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lightore/features/auth/application/auth_provider.dart';
-import 'package:lightore/features/auth/application/auth_status.dart';
+import 'package:lightore/features/auth/domain/auth_status.dart';
 
 /// NavigationGuard decouples auth logic from router.
 class NavigationGuard {

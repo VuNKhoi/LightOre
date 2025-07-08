@@ -61,9 +61,8 @@ class OptionGrid extends StatelessWidget {
                 },
               );
             }
-            final tile = tiles != null && index < tiles!.length
-                ? tiles![index]
-                : null;
+            final tile =
+                tiles != null && index < tiles!.length ? tiles![index] : null;
             return _OptionTile(
               icon: tile?.icon ?? Icons.circle,
               label: tile?.label ?? 'Option',
@@ -80,14 +79,16 @@ class OptionGridTileData {
   final IconData icon;
   final String label;
   final VoidCallback onTap;
-  OptionGridTileData({required this.icon, required this.label, required this.onTap});
+  OptionGridTileData(
+      {required this.icon, required this.label, required this.onTap});
 }
 
 class _OptionTile extends StatelessWidget {
   final IconData icon;
   final String label;
   final VoidCallback onTap;
-  const _OptionTile({required this.icon, required this.label, required this.onTap});
+  const _OptionTile(
+      {required this.icon, required this.label, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
