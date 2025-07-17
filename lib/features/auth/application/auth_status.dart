@@ -1,5 +1,1 @@
-enum AuthStatus {
-  unknown,
-  authenticated,
-  unauthenticated,
-}
+// (File intentionally left blank; AuthStatus moved to domain/auth_status.dart)

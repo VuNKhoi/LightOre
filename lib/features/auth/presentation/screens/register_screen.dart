@@ -112,7 +112,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('RegisterScreen build called');
     return Scaffold(
       appBar: AppBar(title: const Text('Register')),
       body: Center(

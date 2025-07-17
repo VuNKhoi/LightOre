@@ -31,17 +31,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   // --- Auth Actions ---
   Future<void> _login() async {
-    // debugPrint('LOGIN: Attempting login with email=[4memail[24m');
     if (!_formKey.currentState!.validate()) return;
     _setLoading(true, clearMessages: true);
     try {
       await ref.read(authProvider.notifier).signInWithEmail(_email, _password);
       if (!mounted) return;
-      // debugPrint('LOGIN: Success, calling onLoginSuccess? [4mwidget.onLoginSuccess != null[24m');
       widget.onLoginSuccess?.call(context);
       context.go('/home');
     } catch (e) {
-      // debugPrint('LOGIN: Exception caught: ' + e.toString());
       _setError(mapAuthErrorToMessage(e));
     } finally {
       if (mounted) _setLoading(false);
@@ -67,7 +64,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   // --- State Helpers ---
   void _setLoading(bool value, {bool clearMessages = false}) {
     if (!mounted) return;
-    // debugPrint('SET LOADING: ' + value.toString());
     setState(() {
       _loading = value;
       if (clearMessages) {
@@ -80,7 +76,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   void _setError(Object e) {
     if (!mounted) return;
     final msg = e is String ? e : e.toString();
-    // debugPrint('SET ERROR: ' + msg);
     setState(() {
       _errorMessage = msg;
       _infoMessage = null;
@@ -88,7 +83,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   void _setInfo(String msg) {
-    // debugPrint('SET INFO: ' + msg);
     setState(() {
       _infoMessage = msg;
       _errorMessage = null;
@@ -108,7 +102,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Widget _buildLoginButton() {
     final canLogin = _canLogin();
     return ElevatedButton(
-      key: AppKeys.loginButton,
+      key: const ValueKey('login_button'),
       onPressed: _loading || !canLogin ? null : _login,
       style: AppTheme.buttonStyle,
       child: _loading
@@ -132,16 +126,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         onPressed: _loading
             ? null
             : () {
-                debugPrint('Register button pressed');
                 context.go(AppRoutes.register);
-                debugPrint('context.go(/register) called');
               },
         child: const Text(AppLabels.register),
       );
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('LoginScreen build called');
     return Scaffold(
       appBar: AppBar(title: const Text('Login or Pay')),
       body: Center(

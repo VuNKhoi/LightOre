@@ -1,11 +1,12 @@
 // lib/features/auth/application/auth_provider.dart
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lightore/features/auth/domain/repositories/auth_repository_interface.dart';
 import 'package:lightore/repositories/auth_repository.dart';
 import 'auth_notifier.dart';
 import 'auth_state.dart';
 
-final authRepositoryProvider = Provider.family<AuthRepository, FirebaseAuth?>(
+final authRepositoryProvider = Provider.family<IAuthRepository, FirebaseAuth?>(
   (ref, firebaseAuth) => AuthRepository(firebaseAuth: firebaseAuth),
 );
 

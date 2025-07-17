@@ -5,9 +5,12 @@ import 'package:go_router/go_router.dart';
 import 'package:lightore/features/auth/application/auth_notifier.dart';
 import 'package:lightore/features/auth/application/auth_provider.dart';
 import 'package:lightore/features/auth/application/auth_state.dart';
-import 'package:lightore/repositories/auth_repository.dart';
+import 'package:lightore/features/auth/domain/repositories/auth_repository_interface.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:lightore/app.dart' show homeScreenFactory;
+import 'package:lightore/features/home/presentation/screens/home_screen.dart';
+import 'package:lightore/repositories/auth_repository.dart';
 
 /// Builds a ProviderScope or UncontrolledProviderScope for tests, with optional overrides.
 Widget buildProviderScope({
@@ -70,7 +73,8 @@ Future<void> pumpLoginScreenWithRouter(WidgetTester tester,
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
-        authProvider.overrideWith((ref) => MockAuthNotifier(mockAuthRepository)),
+        authProvider
+            .overrideWith((ref) => MockAuthNotifier(mockAuthRepository)),
       ],
       child: MaterialApp.router(
         routerConfig: router,
@@ -149,7 +153,9 @@ MockAuthRepository createMockAuthRepository() {
 
 // Mock classes for FirebaseAuth
 class MockFirebaseAuth extends Mock implements FirebaseAuth {}
+
 class MockUserCredential extends Mock implements UserCredential {}
+
 class MockUser extends Mock implements User {}
 
 // Helper to set up mock FirebaseAuth for AuthRepository tests
@@ -160,7 +166,66 @@ MockFirebaseAuth createMockFirebaseAuth({
 }) {
   final mock = MockFirebaseAuth();
   when(() => mock.currentUser).thenReturn(user);
-  when(() => mock.authStateChanges()).thenAnswer((_) => authStateStream ?? const Stream.empty());
+  when(() => mock.authStateChanges())
+      .thenAnswer((_) => authStateStream ?? const Stream.empty());
   when(() => mock.signOut()).thenAnswer((_) async {});
   return mock;
+}
+
+Future<void> pumpHomeScreenWithProvider(
+  WidgetTester tester, {
+  required MockAuthNotifier notifier,
+  Widget? homeScreen,
+}) async {
+  await tester.pumpWidget(
+    ProviderScope(
+      overrides: [
+        authProvider.overrideWith((ref) => notifier),
+      ],
+      child: MaterialApp(
+        home: homeScreen ?? homeScreenFactory(),
+      ),
+    ),
+  );
+}
+
+Future<void> pumpHomeScreenWithScope(WidgetTester tester,
+    {Widget? homeScreen}) async {
+  await tester.pumpWidget(
+    ProviderScope(
+      child: MaterialApp(
+        home: homeScreen ?? HomeScreen(),
+      ),
+    ),
+  );
+}
+
+Future<void> pumpWidgetWithRouterAndScope({
+  required WidgetTester tester,
+  required String initialLocation,
+  required Map<String, Widget> routes,
+}) async {
+  final router = GoRouter(
+    initialLocation: initialLocation,
+    routes: routes.entries
+        .map((entry) => GoRoute(
+              path: entry.key,
+              builder: (context, state) {
+                final widget = entry.value;
+                if (widget is HomeScreen) {
+                  return HomeScreen();
+                }
+                return widget;
+              },
+            ))
+        .toList(),
+  );
+
+  await tester.pumpWidget(
+    ProviderScope(
+      child: MaterialApp.router(
+        routerConfig: router,
+      ),
+    ),
+  );
 }
